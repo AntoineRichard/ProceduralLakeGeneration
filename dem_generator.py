@@ -1,11 +1,12 @@
 import numpy as np
+from matplotlib import pyplot as plt
 import cv2
 import os
 
 from utils import loadDict, makeGaussianKernel, randomSign
 
 class DemGenerator:
-    def __init__(self, cnt_path=None, save_path=None, shape=(3**8, 3**8), max_sat=100, min_sat=-100):
+    def __init__(self, cnt_path=None, save_path=None, shape=(3**8, 3**8), max_sat=100, min_sat=-100, save_png=False):
         self.contours_path = cnt_path
         self.save_path = save_path
         self.shape = shape
@@ -14,6 +15,7 @@ class DemGenerator:
         self.max_morph_iter = 3
         self.morph_max = 1.3
         self.morph_min = 0.6
+        self.save_png = save_png
 
     def run(self):
         self.loadContours()
@@ -24,6 +26,11 @@ class DemGenerator:
         mult = self.morph()
         dem_morphed = self.saturate(dem*mult)
         np.savez_compressed(os.path.join(self.save_path,'dem.npz'),data=dem_morphed)
+        if self.save_png:
+            plt.figure()
+            plt.imshow(dem_morphed,cmap='jet')
+            plt.savefig(os.path.join(self.save_path,'dem.png'))
+            plt.close()
 
     def morph(self):
         multiplier = np.ones(self.shape)
@@ -80,5 +87,5 @@ class DemGenerator:
         return distance
 
 if __name__ == "__main__":
-    DEMG = DemGenerator("raw_generation/gen8/contours.pkl", "raw_generation/gen8")
+    DEMG = DemGenerator("test/contours.pkl", "test", save_png=True)
     DEMG.run()
