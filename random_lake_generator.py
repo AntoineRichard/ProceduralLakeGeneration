@@ -5,13 +5,14 @@ import os
 from utils import save_dict
 
 class random_lake_generator:
-    def __init__(self, iterations=8, dir_name="gen"):
+    def __init__(self, iterations=8, dir_name="gen", save_grids=False):
         self.grid_size = 3
         self.iterations = iterations
         self.con = np.arange(1,10).reshape([3,3])
         self.con[1,1] = 0
         self.dir_name = dir_name
-        os.makedirs(self.dir_name)
+        self.save_grids = save_grids
+        os.makedirs(self.dir_name, exist_ok=True)
 
     def iterate(self, start=0, loc=[1,1]):
         not_passed = True
@@ -79,7 +80,17 @@ class random_lake_generator:
         dct_contours['2nd_grade'] = [i[-1] for i in self.g2_isl_cnt]
         dct_contours['3rd_grade'] = [i[-1] for i in self.g3_isl_cnt]
         save_dict(dct_contours, os.path.join(self.dir_name,'contours'))
+        if self.save_grids:
+            self.saveGrids()
         
+    def saveGrids(self):
+        for i in range(self.iterations):
+            grd = self.main_grd[i]
+            for j in [self.g1_isl_grd, self.g2_isl_grd, self.g3_isl_grd]:
+                for k in j:
+                    grd += k[i]
+            cv2.imwrite(os.path.join(self.dir_name,"grid_step_"+str(i)+".png"),grd*255)
+
     def look_for_empty_spots(self, grids, contours, max_spots = 1):
         kernel = np.ones((3,3))
         loc_list = []
