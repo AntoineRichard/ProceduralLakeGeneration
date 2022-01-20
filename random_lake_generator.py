@@ -15,28 +15,34 @@ class random_lake_generator:
         os.makedirs(self.dir_name, exist_ok=True)
 
     def iterate(self, start=0, loc=[1,1]):
+        """
+        Iteratively creates grids.
+        """
         not_passed = True
         while not_passed:
             try:
                 grids = []
                 contours = []
-                grids = self.generate_grids(grids, start = start, loc = loc)
+                grids = self.generateGrids(grids, start = start, loc = loc)
                 for i in range(start,self.iterations-1,1):
-                    grids[i+1], cnt = self.populate_grid(grids[i],grids[i+1])
+                    grids[i+1], cnt = self.populateGrid(grids[i],grids[i+1])
                     contours.append(cnt)
-                contours.append(self.sort_grid(grids[i+1]))
+                contours.append(self.sortGrid(grids[i+1]))
                 if np.linalg.norm(contours[-1][0]-contours[-1][-1]) < 1.5:
                     not_passed = False
             except Exception as e: print(e)
         return grids, contours
 
     def run(self):
+        """
+        Generates a main lake with a set of islands in it.
+        """
         # Generate main lake
         print('Generating lake')
         self.main_grd, self.main_cnt = self.iterate()
         # Generate grade 1 islands, max: 2
         print('Generating large islands: maximum 2')
-        locs = self.look_for_empty_spots([self.main_grd[1]], [self.main_cnt[1]], max_spots=2)
+        locs = self.lookForEmptySpots([self.main_grd[1]], [self.main_cnt[1]], max_spots=2)
         self.g1_isl_grd = []
         self.g1_isl_cnt = []
         for loc in locs:
@@ -47,7 +53,7 @@ class random_lake_generator:
         tmp_cnt = None 
         # Generate grade 2 islands, max: 4
         print('Generating medium islands: maximum 4')
-        locs = self.look_for_empty_spots([self.main_grd[2]] +  [i[2] for i in self.g1_isl_grd],
+        locs = self.lookForEmptySpots([self.main_grd[2]] +  [i[2] for i in self.g1_isl_grd],
                                             [self.main_cnt[2]] + [i[1] for i in self.g1_isl_cnt],
                                              max_spots = 4)
         self.g2_isl_grd = []
@@ -61,7 +67,7 @@ class random_lake_generator:
 
         # Generate grade 3 islands, max: 8
         print('Generating small islands: maximum 8')
-        locs = self.look_for_empty_spots([self.main_grd[3]] +  [i[3] for i in self.g1_isl_grd] + [i[3] for i in self.g2_isl_grd],
+        locs = self.lookForEmptySpots([self.main_grd[3]] +  [i[3] for i in self.g1_isl_grd] + [i[3] for i in self.g2_isl_grd],
                                             [self.main_cnt[3]] + [i[2] for i in self.g1_isl_cnt] + [i[1] for i in self.g2_isl_cnt],
                                              max_spots = 8)
         self.g3_isl_grd = []
@@ -84,6 +90,9 @@ class random_lake_generator:
             self.saveGrids()
         
     def saveGrids(self):
+        """
+        Merges and saves the grids.
+        """
         for i in range(self.iterations):
             grd = self.main_grd[i]
             for j in [self.g1_isl_grd, self.g2_isl_grd, self.g3_isl_grd]:
@@ -91,7 +100,10 @@ class random_lake_generator:
                     grd += k[i]
             cv2.imwrite(os.path.join(self.dir_name,"grid_step_"+str(i)+".png"),grd*255)
 
-    def look_for_empty_spots(self, grids, contours, max_spots = 1):
+    def lookForEmptySpots(self, grids, contours, max_spots = 1):
+        """
+        Looks for spots to generate islands in.
+        """
         kernel = np.ones((3,3))
         loc_list = []
         lcl_grd = np.sum(grids,axis=0)
@@ -116,7 +128,10 @@ class random_lake_generator:
             lcl_grd[loc[0]-1:loc[0]+2,loc[1]-1:loc[1]+2] = 1
         return loc_list
         
-    def generate_grids(self, grids, start = 0, loc = [1,1]):
+    def generateGrids(self, grids, start = 0, loc = [1,1]):
+        """
+        Iteratively generates grids
+        """
         grids = []
         for i in range(1,self.iterations+1):
             grids.append(np.zeros((self.grid_size**i,self.grid_size**i)))
@@ -124,7 +139,10 @@ class random_lake_generator:
         grids[start][loc[0],loc[1]] = 0
         return grids
 
-    def build_block_list(self, blocks, start_position):
+    def buildBlockList(self, blocks, start_position):
+        """
+        Builds a sorted list of connected blocks.
+        """
         # Instantiate block list
         sorted_blocks = [blocks[start_position]]
         blocks = blocks.copy()
@@ -158,14 +176,16 @@ class random_lake_generator:
                 not_done = False
         return sorted_blocks
 
-    def analyze_upper_grid(self, prev, cur, nxt):
-        # Checks how the blocks are organized
-        # 
-        # 1 2 3
-        # 4 # 6
-        # 7 8 9
-        #
-        # returns a list telling how the block is connected to other blocks
+    def analyzeUpperGrid(self, prev, cur, nxt):
+        """
+        Checks how the blocks are organized.
+         
+         1 2 3
+         4 # 6
+         7 8 9
+        
+        returns a list telling how the block is connected to other blocks.
+        """
         prev_ = prev - cur
         nxt_ = nxt - cur
         p_mask = np.zeros((3,3))
@@ -177,14 +197,20 @@ class random_lake_generator:
 
         return list(p_con[p_con!=0].flatten()) + list(n_con[n_con!=0].flatten())
                 
-    def sort_grid(self, grid):
+    def sortGrid(self, grid):
+        """
+        Sorts the blocks in the grid. Each block adjacent in the list are adjacent on the grid.
+        """
         blocks = np.argwhere(grid==1)
         start_position = np.argmin(np.linalg.norm(blocks,axis=1))
-        block_list = self.build_block_list(blocks, start_position)
+        block_list = self.buildBlockList(blocks, start_position)
         return np.array(block_list)
     
-    def populate_grid(self, upper_grid, current_grid):
-        block_list = self.sort_grid(upper_grid)
+    def populateGrid(self, upper_grid, current_grid):
+        """
+        Creates new blocks in the list of blocks.    
+        """
+        block_list = self.sortGrid(upper_grid)
         is_first = True
         for i, block in enumerate(block_list):
             is_last = (len(block_list)-1)==i
@@ -197,15 +223,18 @@ class random_lake_generator:
             else:
                 prev = block_list[i-1]
                 nxt = block_list[i+1]
-            logic = self.analyze_upper_grid(prev, block, nxt)
+            logic = self.analyzeUpperGrid(prev, block, nxt)
             prev = current_grid[prev[0]*3:(prev[0]+1)*3,prev[1]*3:(prev[1]+1)*3]
             nxt = current_grid[nxt[0]*3:(nxt[0]+1)*3,nxt[1]*3:(nxt[1]+1)*3]
-            nblock = self.generate_block(logic, prev, nxt, is_first=is_first, is_last=is_last)
+            nblock = self.generateBLock(logic, prev, nxt, is_first=is_first, is_last=is_last)
             current_grid[block[0]*3:(block[0]+1)*3, block[1]*3:(block[1]+1)*3] = nblock
             is_first = False
         return current_grid, np.array(block_list)
     
-    def is_at_interface(self, p, interfaces):
+    def isAtInterface(self, p, interfaces):
+        """
+        Check if a block is at an interface.
+        """
         done = [False]*len(interfaces)
         for i, inter in enumerate(interfaces):
             if inter == 1:
@@ -240,7 +269,10 @@ class random_lake_generator:
         rv = np.min([np.max([v + int(rand),bmin]),bmax])
         return rv
 
-    def generate_block(self, logic, prev, nxt, is_first=False, is_last=False):
+    def generateBLock(self, logic, prev, nxt, is_first=False, is_last=False):
+        """
+        Generates a new block.
+        """
         new_block = np.zeros((3,3))
         # Run constraints
         done = False
@@ -299,7 +331,7 @@ class random_lake_generator:
         else:
             raise ValueError('Unknown connectivity')
 
-        done = self.is_at_interface(p1, [logic[1]])[0]
+        done = self.isAtInterface(p1, [logic[1]])[0]
 
         #print('is done: ', done)
         if done:
@@ -316,7 +348,7 @@ class random_lake_generator:
             while cd:
                 idx = self.randomize(idx)
                 p2 = [0,idx]
-                cd = self.is_at_interface(p2,[logic[0]])[0]
+                cd = self.isAtInterface(p2,[logic[0]])[0]
             new_block[p2[0],p2[1]] = 1
         elif logic[1] == 3:
             new_block[0,2] = 1
@@ -330,7 +362,7 @@ class random_lake_generator:
             while cd:
                 idx = self.randomize(idx)
                 p2 = [idx,0]
-                cd = self.is_at_interface(p2,[logic[0]])[0]
+                cd = self.isAtInterface(p2,[logic[0]])[0]
             new_block[p2[0],p2[1]] = 1
         elif logic[1] == 5:
             raise ValueError('Connectivity 5 does not exist, this should not be possible')
@@ -343,7 +375,7 @@ class random_lake_generator:
             while cd:
                 idx = self.randomize(idx)
                 p2 = [idx,2]
-                cd = self.is_at_interface(p2,[logic[0]])[0]
+                cd = self.isAtInterface(p2,[logic[0]])[0]
             new_block[p2[0],p2[1]] = 1
         elif logic[1] == 7:
             new_block[2,0] = 1
@@ -357,7 +389,7 @@ class random_lake_generator:
             while cd:
                 idx = self.randomize(idx)
                 p2 = [2,idx]
-                cd = self.is_at_interface(p2,[logic[0]])[0]
+                cd = self.isAtInterface(p2,[logic[0]])[0]
             new_block[p2[0],p2[1]] = 1
         elif logic[1] == 9:
             new_block[2,2] = 1
@@ -389,7 +421,7 @@ class random_lake_generator:
                 elif np.abs(d[1]) == 2:
                     for i in [1,-1,0]:
                         pt = [np.min([np.max([p1[0] + i,0]),2]), 1]
-                        cd = self.is_at_interface(pt, logic)
+                        cd = self.isAtInterface(pt, logic)
                         if (np.sum(cd) == 0) and (np.sum((np.array(pt) - np.array(p2))**2) <= 2) and (np.sum((np.array(pt) - np.array(p1))**2) <= 2):
                             p3 = pt
                     new_block[p3[0],p3[1]] = 1
@@ -403,7 +435,7 @@ class random_lake_generator:
                 elif np.abs(d[1]) == 1:
                     for i in [1,-1,0]:
                         pt = [1,np.min([np.max([p1[0] + i,0]),2])]
-                        cd = self.is_at_interface(pt, logic)
+                        cd = self.isAtInterface(pt, logic)
                         if (np.sum(cd) == 0) and (np.sum((np.array(pt) - np.array(p2))**2) <= 2) and (np.sum((np.array(pt) - np.array(p1))**2) <= 2):
                             p3 = pt
                     new_block[p3[0],p3[1]] = 1
