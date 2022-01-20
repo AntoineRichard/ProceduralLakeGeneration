@@ -6,45 +6,60 @@ import random
 import cv2
 import os
 
-from utils import make_gaussian_kernel, save_dict
+from utils import makeGaussianKernel, saveDict
 
 class vegetation_generator:
     def __init__(self, objects, dir_name):
         self.res = 0.1
         self.objects = objects
         self.dir_name = dir_name
-        self.load_dem_and_mask()
+        self.loadDemAndMask()
         self.generate()
         
        
     def generate(self):
+        """
+        Generates the vegetation.
+        """
         gen_objs = []
         for obj in self.objects:
-            gen_objs += self.spawn_objects(obj)
+            gen_objs += self.spawnObjects(obj)
         print("Generated "+str(len(gen_objs))+" objects.")
-        save_dict(gen_objs, os.path.join(self.dir_name,'objects'))
+        saveDict(gen_objs, os.path.join(self.dir_name,'objects'))
          
 
-    def load_dem_and_mask(self):
+    def loadDemAndMask(self):
+        """
+        Loads the dem and the associated mask.
+        """
         self.mask = np.load(os.path.join(self.dir_name,"mask.npz"))['data']
         self.dem = np.load(os.path.join(self.dir_name,"dem.npz"))['data']
 
-    def generate_spawn_area(self, max_h, min_h):
+    def generateSpawnArea(self, max_h, min_h):
+        """
+        Generates the spawn area based on the provided specs.
+        """
         spawn_mask = (self.dem*self.res < max_h)*(self.dem*self.res > min_h)
         spawn_area = np.sum(spawn_mask)*(self.res*self.res)
         spawn_positions = np.argwhere(spawn_mask == 1)
         return spawn_positions, spawn_mask, spawn_area
 
-    def spawn_objects(self, obj):
-        positions, mask, area = self.generate_spawn_area(obj["max_spawn_alt"],obj["min_spawn_alt"])
+    def spawnObjects(self, obj):
+        """
+        Populates the map with objects.
+        """
+        positions, mask, area = self.generateSpawnArea(obj["max_spawn_alt"],obj["min_spawn_alt"])
         if obj["spawn_mode"] == "poisson_clusters":
-            return self.make_poisson_clusters(positions, mask, area, obj)
+            return self.makePoissonClusters(positions, mask, area, obj)
         elif obj["spawn_mode"] == "uniform":
-            return self.make_uniform(positions, area, obj)
+            return self.makeUniform(positions, area, obj)
         else:
             raise ValueError("Unknown sampling mode")
 
-    def make_uniform(self, positions, area, obj):
+    def makeUniform(self, positions, area, obj):
+        """
+        Spawns objects following a uniform sampling law.
+        """
         nb_points = int((area*obj["density"])*(1+np.random.rand()*obj["randomness"] - obj["randomness"]/2))
         p = np.ones((positions.shape[0]))
         p = p/np.sum(p)
@@ -61,12 +76,18 @@ class vegetation_generator:
             points.append(gen)
         return points
 
-    def make_poisson_clusters(self, positions, mask, area, obj):            
-        clusters = self.weighted_sampling(positions, mask, area, obj)
-        clusters = self.populate_clusters(clusters, obj, mask)
+    def makePoissonClusters(self, positions, mask, area, obj):            
+        """
+        spawn objects following a poisson law.
+        """
+        clusters = self.weightedSampling(positions, mask, area, obj)
+        clusters = self.populateClusters(clusters, obj, mask)
         return clusters
 
-    def weighted_sampling(self, positions, mask, area, obj):
+    def weightedSampling(self, positions, mask, area, obj):
+        """
+        Generate Clusters position.
+        """
         nb_points = int((area*obj["density"])*(1+np.random.rand()*obj["randomness"] - obj["randomness"]/2))
         nb_cluster = int((nb_points/obj["obj_per_cluster"]))#*(1+np.random.rand()*obj["randomness"] - obj["randomness"]/2))
         padding = 1 + int((1+obj['randomness'])*obj["cluster_size"]/self.res)
@@ -78,7 +99,7 @@ class vegetation_generator:
         for i in range(nb_cluster):
             width = int((obj["cluster_size"]*2/self.res)*(1+np.random.rand()*obj["randomness"]-obj["randomness"]/2))
             width += 1.0*((width % 2) == 0)
-            cluster_kernel = make_gaussian_kernel(int(width),2)
+            cluster_kernel = makeGaussianKernel(int(width),2)
             idx = np.random.choice(np.arange(positions.shape[0]), p=p)
             point = positions[idx] + padding
             canvas[point[0]-int(width/2):point[0]+int(width/2)+1, point[1]-int(width/2):point[1]+int(width/2)+1] += cluster_kernel
@@ -89,16 +110,19 @@ class vegetation_generator:
             clusters.append(point - padding)
         return clusters
     
-    def populate_clusters(self, clusters_position, obj, mask):            
+    def populateClusters(self, clusters_position, obj, mask):     
+        """
+        Populates the clusters.
+        """       
         objects = []
         obj_footprint = int(obj["footprint"]/self.res)
         obj_footprint += int(1.0*((obj_footprint % 2) == 0))
-        obj_kernel = make_gaussian_kernel(obj_footprint, 4)
+        obj_kernel = makeGaussianKernel(obj_footprint, 4)
         padding = 1 + obj_footprint
         for pos in clusters_position:
             width = int((obj["cluster_size"]*2/self.res)*(1+np.random.rand()*obj["randomness"]-obj["randomness"]/2))
             width += int(1.0*((width % 2) == 0))
-            cluster_kernel = make_gaussian_kernel(width,2)
+            cluster_kernel = makeGaussianKernel(width,2)
             canvas = np.zeros((width + padding*2, width + padding*2))
             canvas[padding:-padding,padding:-padding] = cluster_kernel
             canvas = canvas*mask[pos[0]-int(width/2)-padding:pos[0]+int(width/2)+1+padding, pos[1]-int(width/2)-padding:pos[1]+int(width/2)+1+padding]
