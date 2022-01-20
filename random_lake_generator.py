@@ -4,7 +4,7 @@ import os
 
 from utils import saveDict
 
-class random_lake_generator:
+class RandomLakeGenerator:
     def __init__(self, iterations=8, dir_name="gen", save_grids=False):
         self.grid_size = 3
         self.iterations = iterations
@@ -482,5 +482,5 @@ class random_lake_generator:
         return new_block
 
 if __name__ == "__main__":
-    RLG = random_lake_generator(dir_name='test')
+    RLG = RandomLakeGenerator(dir_name='test')
     RLG.run()

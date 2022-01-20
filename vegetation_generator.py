@@ -8,7 +8,7 @@ import os
 
 from utils import makeGaussianKernel, saveDict
 
-class vegetation_generator:
+class VegetationGenerator:
     def __init__(self, objects, dir_name):
         self.res = 0.1
         self.objects = objects
@@ -300,12 +300,12 @@ if __name__ == "__main__":
     branches['random_rotation'] = [False, False, True]
 
     objects = [trees, bushes, ferns, rocks, branches]
-    RLG = vegetation_generator(objects, 'raw_generation/gen0')
-    RLG = vegetation_generator(objects, 'raw_generation/gen1')
-    RLG = vegetation_generator(objects, 'raw_generation/gen2')
-    RLG = vegetation_generator(objects, 'raw_generation/gen3')
-    RLG = vegetation_generator(objects, 'raw_generation/gen4')
-    RLG = vegetation_generator(objects, 'raw_generation/gen5')
-    RLG = vegetation_generator(objects, 'raw_generation/gen6')
-    RLG = vegetation_generator(objects, 'raw_generation/gen7')
-    RLG = vegetation_generator(objects, 'raw_generation/gen8')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen0')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen1')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen2')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen3')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen4')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen5')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen6')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen7')
+    RLG = VegetationGenerator(objects, 'raw_generation/gen8')
