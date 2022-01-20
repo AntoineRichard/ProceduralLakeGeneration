@@ -146,6 +146,13 @@ def save(poly, path):
         writer.SetInputData(poly)
     writer.Write()
 
+def generateSTLs(folder, size=50):
+    os.makedirs(folder+'/parts',exist_ok=True)
+    tmp = cv2.GaussianBlur(np.load(folder+'/dem.npz')['data'],(11,11),0)
+    poly = decimate(tmp, 1.0, (0.1,0.1,0.1))
+    save(poly, folder+'/dem_full.stl')
+    cut(poly, folder+'/parts/part_', size=size)
+
 if __name__ == "__main__":
     output = "Media/assets/dem_bins"
     parser_path = "tmp/parser.pkl"

@@ -148,164 +148,158 @@ class VegetationGenerator:
                 objects.append(gen)
         return objects
 
+trees = {}
+trees['name'] = 'trees'
+trees['density'] = 0.1
+trees['randomness'] = 0.75
+trees['max_spawn_alt'] = 1.0
+trees['min_spawn_alt'] = -0.25
+trees['spawn_mode'] = "poisson_clusters"
+trees['obj_per_cluster'] = 4
+trees['cluster_size'] = 5.0
+trees['assets'] =  [['oak_1.usd',
+                    'oak_2.usd'],
+                    ['spruce_1.usd',
+                    'spruce_2.usd',
+                    'spruce_3.usd',
+                    'spruce_small_1.usd',
+                    'spruce_small_2.usd']]
+trees['scale'] = [[[0.63,0.63,0.63],
+                    [0.83,0.83,0.83]],
+                    [[1.14, 1.14,1.14],
+                    [0.94,0.94,0.94],
+                    [0.72,0.72,0.72],
+                    [2.76,2.76,2.76],
+                    [2.0,2.0,2.0]]]
+trees['orientation'] = [[[1.57, 0.0, 0.0],
+                        [1.57,0.0,0.0]],
+                        [[1.57,0.0,0.0],
+                        [1.57,0.0,0.0],
+                        [1.57,0.0,0.0],
+                        [1.57,0.0,0.0],
+                        [1.57,0.0,0.0]]]
+trees['random_rotation'] = [False, False, True]
+trees['random_scale'] = [0.75, 1.25]
+trees['footprint'] = 2
+
+bushes = {}
+bushes['name'] = 'bushes'
+bushes['density'] = 0.06
+bushes['randomness'] = 0.75
+bushes['max_spawn_alt'] = 1.0
+bushes['min_spawn_alt'] = -0.25
+bushes['spawn_mode'] = "poisson_clusters"
+bushes['obj_per_cluster'] = 10
+bushes['cluster_size'] = 5.0
+bushes['assets'] =  [['mountain_ash_1.usd',
+                 'mountain_ash_2.usd',
+                 'mountain_ash_3.usd']]
+bushes['scale'] = [[[1.0,1.0,1.0],
+                 [1.0,1.0,1.0],
+                 [1.0,1.0,1.0]]]
+bushes['orientation'] = [[[1.57, 0.0, 0.0],
+                     [1.57,0.0,0.0],
+                     [1.57,0.0,0.0]]]
+bushes['random_rotation'] = [False, False, True]
+bushes['random_scale'] = [0.75, 1.25]
+bushes['footprint'] = 2
+
+ferns = {}
+ferns['name'] = 'ferns'
+ferns['density'] = 1.5
+ferns['randomness'] = 0.3
+ferns['max_spawn_alt'] = 0.5
+ferns['min_spawn_alt'] = -2.0
+ferns['spawn_mode'] = "poisson_clusters"
+ferns['obj_per_cluster'] = 80
+ferns['cluster_size'] = 9.0
+ferns['assets'] = [['reed.usd'],
+               ['fern_1.usd',
+               'fern_2.usd'],
+               ['grass_3.usd',
+               'grass_4.usd',
+               'grass_6.usd']]
+ferns['scale'] = [[[0.2,0.2,0.2]],
+               [[0.5,0.5,0.5],
+               [0.5,0.5,0.5]],
+               [[1.3,1.3,1.3],
+               [1.3,1.3,1.3],
+               [1.3,1.3,1.3]]]
+ferns['orientation'] = [[[1.57,0.0,0.0]],
+                   [[3.14,0.0,0.0],
+                   [3.14,0.0,0.0]],
+                   [[3.14,0.0,0.0],
+                   [3.14,0.0,0.0],
+                   [3.14,0.0,0.0]]]
+ferns['random_rotation'] = [False, False, True]
+ferns['random_scale'] = [0.5, 1]
+ferns['footprint'] = 0.5
+
+rocks = {}
+rocks['name'] = 'rocks'
+rocks['density'] = 0.025
+rocks['randomness'] = 0.2
+rocks['max_spawn_alt'] = 1.0
+rocks['min_spawn_alt'] = -1.0
+rocks['spawn_mode'] = "poisson_clusters"
+rocks['obj_per_cluster'] = 15
+rocks['cluster_size'] = 6.0
+rocks['assets'] =  [['big_rock_2.usd',
+                    'big_rock_3.usd',
+                    'flat_rock_1.usd',
+                    'flat_rock_2.usd',
+                    'flat_rock_3.usd',
+                    'flat_rock_5.usd',
+                    'rock_1.usd',
+                    'rock_2.usd',
+                    'rock_3.usd',
+                    'rock_4.usd']]
+rocks['scale'] = [[[0.75,0.75,0.75],
+                    [0.75,0.75,0.75],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5],
+                    [1.5,1.5,1.5]]]
+rocks['orientation'] = [[[0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0],
+                        [0.0,0.0,0.0]]]
+rocks['random_rotation'] = [True, True, True]
+rocks['random_scale'] = [0.5, 1.5]
+rocks['footprint'] = 0.5
+
+branches = {}
+branches['name'] = 'branches'
+branches['density'] = 0.001
+branches['randomness'] = 0
+branches['max_spawn_alt'] = -2
+branches['min_spawn_alt'] = -4
+branches['spawn_mode'] = "uniform"
+branches['assets'] = ['fallen_tree_1.usd',
+                      'fallen_tree_2.usd',
+                      'log.usd']
+branches['orientation'] = [[0.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0]]
+branches['scale'] = [[0.25, 0.25, 0.25],
+                    [0.25, 0.25, 0.25],
+                    [0.125, 0.125, 0.125]]
+branches['random_scale'] = [0.75, 1.25]
+branches['random_rotation'] = [False, False, True]
+
+objects = [trees, bushes, ferns, rocks, branches]
+
+
 if __name__ == "__main__":
     # ADD STUFF TO OBJ DICT ABOUT SETTINGS. REMOVE MIXING ARG REPLACE BY LIST OF ASSETS
-    trees = {}
-    trees['name'] = 'trees'
-    trees['density'] = 0.1
-    trees['randomness'] = 0.75
-    trees['max_spawn_alt'] = 1.0
-    trees['min_spawn_alt'] = -0.25
-    trees['spawn_mode'] = "poisson_clusters"
-    trees['obj_per_cluster'] = 4
-    trees['cluster_size'] = 5.0
-    trees['assets'] =  [['oak_1.usd',
-                        'oak_2.usd'],
-                        ['spruce_1.usd',
-                        'spruce_2.usd',
-                        'spruce_3.usd',
-                        'spruce_small_1.usd',
-                        'spruce_small_2.usd']]
-    trees['scale'] = [[[0.63,0.63,0.63],
-                        [0.83,0.83,0.83]],
-                        [[1.14, 1.14,1.14],
-                        [0.94,0.94,0.94],
-                        [0.72,0.72,0.72],
-                        [2.76,2.76,2.76],
-                        [2.0,2.0,2.0]]]
-    trees['orientation'] = [[[1.57, 0.0, 0.0],
-                            [1.57,0.0,0.0]],
-                            [[1.57,0.0,0.0],
-                            [1.57,0.0,0.0],
-                            [1.57,0.0,0.0],
-                            [1.57,0.0,0.0],
-                            [1.57,0.0,0.0]]]
-    trees['random_rotation'] = [False, False, True]
-    trees['random_scale'] = [0.75, 1.25]
-    trees['footprint'] = 2
-    
-    bushes = {}
-    bushes['name'] = 'bushes'
-    bushes['density'] = 0.06
-    bushes['randomness'] = 0.75
-    bushes['max_spawn_alt'] = 1.0
-    bushes['min_spawn_alt'] = -0.25
-    bushes['spawn_mode'] = "poisson_clusters"
-    bushes['obj_per_cluster'] = 10
-    bushes['cluster_size'] = 5.0
-    bushes['assets'] =  [['mountain_ash_1.usd',
-                     'mountain_ash_2.usd',
-                     'mountain_ash_3.usd']]
-    bushes['scale'] = [[[1.0,1.0,1.0],
-                     [1.0,1.0,1.0],
-                     [1.0,1.0,1.0]]]
-    bushes['orientation'] = [[[1.57, 0.0, 0.0],
-                         [1.57,0.0,0.0],
-                         [1.57,0.0,0.0]]]
-    bushes['random_rotation'] = [False, False, True]
-    bushes['random_scale'] = [0.75, 1.25]
-    bushes['footprint'] = 2
-
-    ferns = {}
-    ferns['name'] = 'ferns'
-    ferns['density'] = 1.5
-    ferns['randomness'] = 0.3
-    ferns['max_spawn_alt'] = 0.5
-    ferns['min_spawn_alt'] = -2.0
-    ferns['spawn_mode'] = "poisson_clusters"
-    ferns['obj_per_cluster'] = 80
-    ferns['cluster_size'] = 9.0
-    ferns['assets'] = [['reed.usd'],
-                   ['fern_1.usd',
-                   'fern_2.usd'],
-                   ['grass_3.usd',
-                   'grass_4.usd',
-                   'grass_6.usd']]
-    ferns['scale'] = [[[0.2,0.2,0.2]],
-                   [[0.5,0.5,0.5],
-                   [0.5,0.5,0.5]],
-                   [[1.3,1.3,1.3],
-                   [1.3,1.3,1.3],
-                   [1.3,1.3,1.3]]]
-    ferns['orientation'] = [[[1.57,0.0,0.0]],
-                       [[3.14,0.0,0.0],
-                       [3.14,0.0,0.0]],
-                       [[3.14,0.0,0.0],
-                       [3.14,0.0,0.0],
-                       [3.14,0.0,0.0]]]
-    ferns['random_rotation'] = [False, False, True]
-    ferns['random_scale'] = [0.5, 1]
-    ferns['footprint'] = 0.5
-
-    rocks = {}
-    rocks['name'] = 'rocks'
-    rocks['density'] = 0.025
-    rocks['randomness'] = 0.2
-    rocks['max_spawn_alt'] = 1.0
-    rocks['min_spawn_alt'] = -1.0
-    rocks['spawn_mode'] = "poisson_clusters"
-    rocks['obj_per_cluster'] = 15
-    rocks['cluster_size'] = 6.0
-    rocks['assets'] =  [['big_rock_2.usd',
-                        'big_rock_3.usd',
-                        'flat_rock_1.usd',
-                        'flat_rock_2.usd',
-                        'flat_rock_3.usd',
-                        'flat_rock_5.usd',
-                        'rock_1.usd',
-                        'rock_2.usd',
-                        'rock_3.usd',
-                        'rock_4.usd']]
-    rocks['scale'] = [[[0.75,0.75,0.75],
-                        [0.75,0.75,0.75],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5],
-                        [1.5,1.5,1.5]]]
-    rocks['orientation'] = [[[0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0],
-                            [0.0,0.0,0.0]]]
-    rocks['random_rotation'] = [True, True, True]
-    rocks['random_scale'] = [0.5, 1.5]
-    rocks['footprint'] = 0.5
-
-    branches = {}
-    branches['name'] = 'branches'
-    branches['density'] = 0.001
-    branches['randomness'] = 0
-    branches['max_spawn_alt'] = -2
-    branches['min_spawn_alt'] = -4
-    branches['spawn_mode'] = "uniform"
-    branches['assets'] = ['fallen_tree_1.usd',
-                          'fallen_tree_2.usd',
-                          'log.usd']
-    branches['orientation'] = [[0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0]]
-    branches['scale'] = [[0.25, 0.25, 0.25],
-                        [0.25, 0.25, 0.25],
-                        [0.125, 0.125, 0.125]]
-    branches['random_scale'] = [0.75, 1.25]
-    branches['random_rotation'] = [False, False, True]
-
-    objects = [trees, bushes, ferns, rocks, branches]
-    RLG = VegetationGenerator(objects, 'raw_generation/gen0')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen1')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen2')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen3')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen4')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen5')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen6')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen7')
-    RLG = VegetationGenerator(objects, 'raw_generation/gen8')
+    VG = VegetationGenerator(objects, 'test')
