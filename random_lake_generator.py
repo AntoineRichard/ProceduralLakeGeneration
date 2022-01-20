@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import os
 
-from utils import save_dict
+from utils import saveDict
 
 class random_lake_generator:
     def __init__(self, iterations=8, dir_name="gen", save_grids=False):
@@ -85,7 +85,7 @@ class random_lake_generator:
         dct_contours['1st_grade'] = [i[-1] for i in self.g1_isl_cnt]
         dct_contours['2nd_grade'] = [i[-1] for i in self.g2_isl_cnt]
         dct_contours['3rd_grade'] = [i[-1] for i in self.g3_isl_cnt]
-        save_dict(dct_contours, os.path.join(self.dir_name,'contours'))
+        saveDict(dct_contours, os.path.join(self.dir_name,'contours'))
         if self.save_grids:
             self.saveGrids()
         
